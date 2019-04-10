@@ -1,0 +1,733 @@
+package digital;
+import java.util.*;
+import java.io.IOException; 
+public class input {
+	 
+	public static int  count_ones(String x)
+	{
+		int count =0;
+		/*for(int i=0;i<x.length();i++)//another method...
+		{
+			char ch= x.charAt(i);
+			if(ch=='1')
+			{
+				count ++;
+				x.replace("1", ",");
+			}
+		}*/
+		
+		char[] arr=x.toCharArray();
+		
+		for(int i=0;i<arr.length;i++)
+		{
+			if(arr[i]=='1')
+			{
+				count ++;
+			}
+		}
+		return count ;
+	}
+	
+	public static void binary_in_order(String[]x)
+	{
+		for(int i=0;i<x.length;i++)
+		{
+			for(int j=i+1;j<x.length;j++)
+			{
+				if((count_ones(x[i]))>(count_ones(x[j])))
+				{
+					String temp =x[i];
+					x[i]=x[j];
+					x[j]=temp;
+				}
+			}
+		}
+		
+	}
+	
+	public static boolean countDifferent(String x,String y)
+	{
+		int count=0;
+		char[] arr1=x.toCharArray();
+		char[] arr2=y.toCharArray();
+		for(int i=0;i<arr1.length;i++)
+		{
+			if(arr1[i]==arr2[i])
+			{
+				count++;
+			}
+		}
+		if(count==(arr1.length-1))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	public static String AddDot(String x,String y)
+	{
+		char[] arr1=x.toCharArray();
+		char[] arr2=y.toCharArray();
+		for(int i=0;i<arr1.length;i++)
+		{
+			if(arr1[i]!=arr2[i])
+			{
+				arr1[i]='_';
+				arr2[i]='_';
+			}
+		}
+		String change=new String();
+		for(int i=0;i<arr1.length;i++)
+		{
+			change=change+arr1[i];
+		}
+		return change;
+	}
+	public static LinkedList<String> remove_the_multiply(LinkedList<String> x)
+	{
+		for(int i=0;i<x.size();i++)
+		{
+			for(int j=i+1;j<x.size();j++)
+			{
+				if(x.get(i).equals(x.get(j)))
+				{
+					x.remove(j);
+					if(j<x.size())
+					{
+						while((x.get(j).equals(x.get(i))))
+						{
+							int found=0;
+							if(j<x.size())
+							{
+								x.remove(j);
+								if(j<x.size())
+								{
+									 found=1;
+								}
+								if(found==0)
+								{
+									break;
+								}
+								
+							}
+							
+						}	
+					}
+					
+				}
+			}
+		}
+		return x;
+	}
+	public static LinkedList tubular(String[]arr_Binary,int base)
+	{
+		int count_to_base=0;
+		int variable_size=arr_Binary.length;
+		LinkedList <String>Binary=new LinkedList();
+		LinkedList <String>PrimeImplicant=new LinkedList();
+		LinkedList <String>temp_comma=new LinkedList();
+		for(int i=0;i<variable_size;i++)
+		{
+			Binary.add(arr_Binary[i]);
+			temp_comma.add(arr_Binary[i]);
+		}
+		
+		while(count_to_base<base)
+		{
+			LinkedList <String>temp=new LinkedList();	
+			for(int i=0;i<Binary.size();i++)
+			{
+				for(int j=i+1;j<Binary.size();j++)
+				{
+					if(countDifferent(Binary.get(i),Binary.get(j)))
+					{
+						temp.add(AddDot(Binary.get(i),Binary.get(j)));
+						temp_comma.remove(i);
+						temp_comma.add(i, (Binary.get(i)+","));
+						temp_comma.remove(j);
+						temp_comma.add(j, (Binary.get(j)+","));
+					}
+				}
+			}
+			LinkedList <String>help=new LinkedList();
+			help=remove_the_multiply(temp);
+			temp=help;
+			for(int z=0;z<temp_comma.size();z++)
+			{
+				if(temp_comma.get(z).contains(","))
+				{
+				}
+				else
+				{
+					PrimeImplicant.add(temp_comma.get(z));	
+				}
+			}
+			Binary=temp;
+			temp_comma.clear();
+			for(int z=0;z<Binary.size();z++)
+			{
+				temp_comma.add(Binary.get(z));
+			}
+			
+			count_to_base++;
+		}
+		System.out.println();
+		for(int i=0;i<PrimeImplicant.size();i++)
+		{
+			System.out.println(PrimeImplicant.get(i));
+		}
+		return PrimeImplicant;
+	}
+	public static int  Different_cost(String x,LinkedList<String> essential)
+	{
+		int cost=0;
+		char[] array=x.toCharArray();
+		for(int j=0;j<array.length;j++)
+		{
+			if(array[j]=='1')
+			{
+				cost++;
+			}
+			if(array[j]=='0')
+			{
+				int found=0;
+				for(int i=0;i<essential.size();i++)
+				{
+					char[] help=essential.get(i).toCharArray();
+					if(help[j]=='0')
+					{
+						found=1;
+					}
+				}
+				if(found==1)
+				{
+					cost++;
+				}
+				else
+				{
+					cost=cost+2;
+				}
+			}
+		}
+		cost++;
+		return cost;
+	}
+	public static LinkedList<String> cost(LinkedList<String> essential,LinkedList<String> preper_essential)
+	{
+		LinkedList<Integer>cost_value=new LinkedList();
+		for(int i=0;i<preper_essential.size();i++)
+		{
+			String x=preper_essential.get(i);
+			String[]x1=x.split("&");
+			int cost=0;
+			for(int j=0;j<x1.length;j++)
+			{
+			 	cost=cost+Different_cost(x1[j],essential);
+			}
+			cost_value.add(cost);
+		}
+		int min=cost_value.get(0);
+		for(int i=1;i<cost_value.size();i++)
+		{
+			if(cost_value.get(i)<min)
+			{
+				min=cost_value.get(i);
+			}
+		}
+		LinkedList<String>before_final_essential=new LinkedList();
+		for(int i=0;i<cost_value.size();i++)
+		{
+			if(cost_value.get(i)==min)
+			{
+				before_final_essential.add(preper_essential.get(i));
+			}
+		}
+		return before_final_essential;
+		
+	}
+	public static LinkedList combination (String binarynum)
+	{
+		char[] arr1=binarynum.toCharArray();
+		LinkedList<Double>arr2=new LinkedList();
+		int j=0;
+		double sum=0;
+		for(int i=(arr1.length-1);i>=0;i--)
+		{
+			if(arr1[i]=='_')
+			{
+				arr2.add(Math.pow(2, j));
+				j++;
+			}
+			else 
+			{
+			  if(arr1[i]=='1')
+			  {
+				  sum=sum+Math.pow(2, j);
+				  j++;
+			  }
+			  else
+			  {
+				  j++;
+			  }
+				
+			}
+		}
+		arr2.add(0, sum);
+		int u=0;
+		LinkedList<Double>combin=new LinkedList();
+		for(int i=0;i<Math.pow(2, arr2.size());i++)
+		{
+			String x="";
+			double y=0;
+			for(int z=0;z<arr2.size();z++)
+			{
+				 if ((i & (1 << z)) > 0)
+				{
+					x=x+Double.toString(arr2.get(z));
+					y=y+arr2.get(z);
+				}
+			}
+			if((x!="")&&(x.contains(Double.toString(arr2.get(0)))))
+			{
+				combin.add(u, y);
+				u++;
+			}
+		}
+		/*for(int i=0;i<combin.size();i++)
+		{
+			System.out.println(combin.get(i));
+		}*/
+		return combin;
+	}
+	public static void prime_table(LinkedList<String> Prime_Implicant,int[] decimal_order)
+	{
+		String [][]table=new String[Prime_Implicant.size()+1][decimal_order.length+2];
+		int y=0;
+		for(int i=1;i<Prime_Implicant.size()+1;i++)
+		{
+			table[i][0]=Prime_Implicant.get(y);
+			y++;
+		}
+		y=0;
+		for(int i=1;i<decimal_order.length+1;i++)
+		{
+			table[0][i]=Integer.toString(decimal_order[y]);
+			y++;
+		}
+		for(int i=1;i<Prime_Implicant.size()+1;i++)
+		{
+			LinkedList<Double>combin=new LinkedList();
+			combin=combination(table[i][0]);
+			for(int j=1;j<decimal_order.length+1;j++)
+			{
+				for(int z=0;z<combin.size();z++)
+				{
+					double u=combin.get(z);
+					if(table[0][j].contentEquals(Integer.toString((int)u)))
+					{
+						table[i][j]="*";
+						break;
+					}
+				}
+			}
+		}
+		for(int i=0;i<Prime_Implicant.size()+1;i++)
+		{
+			for(int j=0;j<decimal_order.length+1;j++)
+			{
+				System.out.print(table[i][j]+" ");
+			}
+			System.out.println();
+		}
+		LinkedList<String> essential=new LinkedList();
+		
+		int num_of_row=0;
+		for(int j=1;j<decimal_order.length+1;j++)
+		{
+			int count_Astrick=0;
+			for(int i=1;i<Prime_Implicant.size()+1;i++)
+			{
+				if(table[i][j]=="*")
+				{
+					count_Astrick++;
+					num_of_row=i;
+				}
+			}
+			if(count_Astrick==1)
+			{
+				essential.add(table[num_of_row][0]);
+				for(int z=1;z<decimal_order.length+1;z++)
+				{
+					if(table[num_of_row][z]=="*")
+					{
+						for(int w=1;w<Prime_Implicant.size()+1;w++)
+						{
+							table[w][z]="#";
+						}
+					}
+				}
+			
+			}	
+		}
+		LinkedList<String> busy_coloum=new LinkedList();
+		for(int i=1;i<decimal_order.length+1;i++)
+		{
+			if(table[1][i]!="#")
+			{
+				busy_coloum.add(table[0][i]);
+			}
+		}
+		for(int i=0;i<Prime_Implicant.size()+1;i++)
+		{
+			for(int j=0;j<decimal_order.length+1;j++)
+			{
+				System.out.print(table[i][j]+" ");
+			}
+			System.out.println();
+		}
+		for(int i=0;i<essential.size();i++)
+		{
+			System.out.println(essential.get(i));
+		}
+		LinkedList<String> busy_row=new LinkedList();
+		for(int i=1;i<Prime_Implicant.size()+1;i++)
+		{
+			int count_non_equal=0;
+			for(int r=0;r<essential.size();r++)
+			{
+				if(table[i][0]!=essential.get(r))
+				{
+					count_non_equal++;
+				}
+			}
+			if(count_non_equal==essential.size())
+			{
+				busy_row.add(table[i][0]);
+			}
+			
+		}
+		if(busy_coloum.size()!=0)
+		{
+			int u=0;
+			String[][]table2=new String [busy_row.size()+1][busy_coloum.size()+1];
+			String[][]table3=new String [busy_row.size()+1][busy_coloum.size()+1];
+			for(int i=1;i<busy_coloum.size()+1;i++)
+			{
+				table2[0][i]=busy_coloum.get(u);
+				table3[0][i]=busy_coloum.get(u);
+						u++;
+			}
+			u=0;
+			for(int j=1;j<busy_row.size()+1;j++)
+			{
+				table2[j][0]=busy_row.get(u);
+				table3[j][0]=busy_row.get(u);
+				u++;
+			}
+			for(int i=1;i<busy_row.size()+1;i++)
+			{
+				LinkedList<Double>combin=new LinkedList();
+				combin=combination(table2[i][0]);
+				for(int j=1;j<busy_coloum.size()+1;j++)
+				{
+					for(int z=0;z<combin.size();z++)
+					{
+						double p=combin.get(z);
+						if(table2[0][j].contentEquals(Integer.toString((int)p)))
+						{
+							table2[i][j]="*";
+							table3[i][j]="*";
+							break;
+						}
+					}
+				}
+			}
+			for(int i=0;i<busy_row.size()+1;i++)
+			{
+				for(int j=0;j<busy_coloum.size()+1;j++)
+				{
+					if((table2[i][j]!="*")&&(i!=0)&&(j!=0))
+					{
+						table2[i][j]="&";
+						table3[i][j]="&";
+					}
+					System.out.print(table2[i][j]+" ");
+				}
+				System.out.println();
+			}
+			Petrick(table2,table3,essential);		
+		}
+	}
+	public static boolean test_table(String[][]table2,String PI,String[][] table3)
+	{
+		String [][]help_table=new String[table2.length][table2[0].length];
+		help_table=table2;
+		String[] All_PI=PI.split("&");
+		for(int i=1;i<help_table.length;i++)
+		{
+			for(int z=0;z<All_PI.length;z++)
+			{
+				if(help_table[i][0].equals(All_PI[z]))
+				{
+					for(int j=1;j<help_table[0].length;j++)
+					{
+						if(help_table[i][j]=="*")
+						{
+							for(int p=1;p<help_table.length;p++)
+							{
+								help_table[p][j]="#";
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+		int found=0;
+		for(int i=1;i<help_table.length;i++)
+		{
+			for(int j=1;j<help_table[0].length;j++)
+			{
+				if(help_table[i][j]!="#")
+				{
+					found=1;
+				}
+			}
+		}
+		for(int z=1;z<table3.length;z++)
+		{
+			for(int j=1;j<table3[0].length;j++)
+			{
+				String temp=table3[z][j];
+				table2[z][j]=temp;
+			}
+		}
+		if(found==0)
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+		
+	}
+	public static int count_num_of_prime(String x)
+	{
+		int count=0;
+		char[] array=x.toCharArray();
+		for(int i=0;i<array.length;i++)
+		{
+			if(array[i]=='&')
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+	public static LinkedList arrange_prepare_Essential(LinkedList <String>prepare_Essential)
+	{
+		String[]help_array=new String[prepare_Essential.size()];
+		for(int i=0;i<help_array.length;i++)
+		{
+			help_array[i]=prepare_Essential.get(i);
+		}
+		for(int i=0;i<help_array.length;i++)
+		{
+			for(int j=i+1;j<help_array.length;j++)
+			{
+				if((count_num_of_prime(help_array[i]))>(count_num_of_prime(help_array[j])))
+				{
+					String temp=help_array[j];
+					help_array[j]=help_array[i];
+					help_array[i]=temp;
+				}
+			}
+		}
+		LinkedList<String> few_preper_essential=new LinkedList();
+		String min=new String();
+		min=help_array[0];
+		for(int i=0;i<help_array.length;i++)
+		{
+			if(count_num_of_prime(min)==count_num_of_prime(help_array[i]))
+			{
+				few_preper_essential.add(help_array[i]);
+			}
+			System.out.println(help_array[i]);
+		}
+		for(int i=0;i<few_preper_essential.size();i++)
+		{
+			System.out.println(few_preper_essential.get(i));
+		}
+		
+		return few_preper_essential;
+	}
+	public static void Petrick(String [][]table,String [][]table2,LinkedList essential)
+	{
+		LinkedList<String> rest_of_PI=new LinkedList();
+		for(int i=1;i<table.length;i++)
+		{
+			rest_of_PI.add(table[i][0]);
+		}
+		LinkedList<String> combin=new LinkedList();
+		for(int i=0;i<Math.pow(2, rest_of_PI.size());i++)
+		{
+			String x="";
+			for(int z=0;z< rest_of_PI.size();z++)
+			{
+				 if ((i & (1 << z)) > 0)
+				{
+					x=x+rest_of_PI.get(z)+"&";
+				}
+			}
+			int u=0;
+			if(x!="")
+			{
+				combin.add(u, x);
+				u++;
+			}
+		}
+		LinkedList<String>preper_the_essential=new LinkedList();
+		int y=0;
+		for(int i=0;i<combin.size();i++)
+		{
+			System.out.println(combin.get(i));	
+		}
+		System.out.println("stooop...Allah akbar");
+		for(int i=0;i<combin.size();i++)
+		{
+			if(test_table(table,combin.get(i),table2))
+			{
+				preper_the_essential.add(combin.get(i));
+				System.out.println(preper_the_essential.get(y));
+				y++;
+			}
+		}
+		System.out.println("stooop...Allah akbar kabira");
+		LinkedList<String>few_preper_essential=new LinkedList();
+		few_preper_essential=arrange_prepare_Essential(preper_the_essential);
+		LinkedList<String>before_final_essential=new LinkedList();
+		before_final_essential=cost(essential,few_preper_essential);
+		System.out.println("stooop...el hamdo to Allah^^ ");
+		for(int i=0;i<before_final_essential.size();i++)
+		{
+			System.out.println(before_final_essential.get(i));
+		}
+		
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+     String a=new String();
+     String b=new String();
+     Scanner scan =new Scanner(System.in);
+     a=scan.nextLine();
+     System.out.println("Are You Need Entre Dont care..");
+     String e=scan.nextLine();
+     if(e.equalsIgnoreCase("yes"))
+     {
+    	 b=scan.nextLine(); 
+     }
+     String b2=new String();
+     String b3=new String();
+     b2=b.replace("{", "");
+     b3=b2.replace("}", "");
+     String[]b1=b3.split(",");
+     int [] Dont_care_decimal=new int [b1.length];
+     for(int i=0;i<b1.length;i++)
+     {
+    	 Dont_care_decimal[i]= Integer.parseInt(b1[i]);
+     }
+    // System.out.println(a);
+     String a2=new String();
+     String a3=new String();
+     a2=a.replace("{", "");
+     a3=a2.replace("}", "");
+     String[]a5=a3.split(",");
+     int [] decimal_without_dont_care=new int [a5.length];
+     for(int i=0;i<a5.length;i++)
+     {
+    	 decimal_without_dont_care[i]= Integer.parseInt(a5[i]);
+     }
+    // System.out.println(a.length());
+    // System.out.println(a2.length());
+    // System.out.println(a3.length());
+     String a4=a3+","+b3;
+     String[]a1=a4.split(",");
+     
+     int[] array=new int [a1.length];
+     String s="";
+     String[] binary =new String[a1.length]; 
+     for(int i=0;i<a1.length;i++)
+     {
+    	 int x=Integer.parseInt(a1[i]);
+    	 //System.out.println(x);
+    	 array[i]=x;
+    	 s=Integer.toBinaryString(x);
+    	 //System.out.println(s);
+    	 binary[i]=s;
+     }
+     for(int i=0;i<array.length;i++)
+     {
+    	 System.out.print(array[i]+" ");
+     }
+     System.out.println();
+     for(int i=0;i<array.length;i++)
+     {
+    	 System.out.print(binary[i]+" ");
+     }
+     System.out.println();
+     int max=array[0];
+     for(int j=1;j <(array.length);j++)
+     {
+    	 if(max<array[j])
+    	 {
+    		 max=array[j];
+    	 }
+     }
+     System.out.println(max);
+     int binary_base=0;
+     while(max>=Math.pow(2,binary_base))
+     {
+    	 binary_base++;
+     }
+     System.out.println(binary_base);
+     for(int j=0;j<binary.length;j++)
+     {
+    	 while(binary[j].length()<binary_base)
+    	 {
+    		 binary[j]="0"+ binary[j];
+    	 }
+    	 System.out.print(binary[j]+" ");
+     }
+     System.out.println();
+     
+     //System.out.println(count_ones(binary[6]));
+     binary_in_order(binary);
+     for(int i=0;i<binary.length;i++)
+     {
+    	 System.out.print(binary[i]+" ");
+     }
+     System.out.println();
+     int [] Decimal_order=new int [binary.length];
+     for(int i=0;i<binary.length;i++)
+     {
+    	 int x=Integer.parseInt(binary[i], 2);
+    	// System.out.println(x);
+    	 Decimal_order[i]=x;
+     }
+     for(int i=0;i<Decimal_order.length;i++)
+     {
+    	 System.out.print(Decimal_order[i]+" ");
+     }
+     LinkedList Prime_Implicant=new LinkedList();
+     Prime_Implicant=tubular( binary,binary_base);
+     prime_table(Prime_Implicant,decimal_without_dont_care);
+     
+     //combination("11__11");
+	}
+
+	
+}
