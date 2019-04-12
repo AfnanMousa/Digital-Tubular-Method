@@ -174,13 +174,14 @@ public class input {
 			count_to_base++;
 		}
 		System.out.println();
+		System.out.println("this is the Prime Implicant^^");
 		for(int i=0;i<PrimeImplicant.size();i++)
 		{
 			System.out.println(PrimeImplicant.get(i));
 		}
 		return PrimeImplicant;
 	}
-	public static int  Different_cost(String x,LinkedList<String> essential)
+	public static int  Different_cost(String x,LinkedList<String> essential,String[]preper,int k)
 	{
 		int cost=0;
 		char[] array=x.toCharArray();
@@ -197,6 +198,14 @@ public class input {
 				{
 					char[] help=essential.get(i).toCharArray();
 					if(help[j]=='0')
+					{
+						found=1;
+					}
+				}
+				for(int i=k-1;i>=0;i--)
+				{
+					char[]help2=preper[i].toCharArray();
+					if(help2[j]=='0')
 					{
 						found=1;
 					}
@@ -224,7 +233,7 @@ public class input {
 			int cost=0;
 			for(int j=0;j<x1.length;j++)
 			{
-			 	cost=cost+Different_cost(x1[j],essential);
+			 	cost=cost+Different_cost(x1[j],essential,x1,j);
 			}
 			cost_value.add(cost);
 		}
@@ -301,7 +310,7 @@ public class input {
 		}*/
 		return combin;
 	}
-	public static void prime_table(LinkedList<String> Prime_Implicant,int[] decimal_order)
+	public static void prime_table(LinkedList<String> Prime_Implicant,int[] decimal_order,int base)
 	{
 		String [][]table=new String[Prime_Implicant.size()+1][decimal_order.length+2];
 		int y=0;
@@ -387,6 +396,7 @@ public class input {
 			}
 			System.out.println();
 		}
+		System.out.println("this is the  prime essential^^ ");
 		for(int i=0;i<essential.size();i++)
 		{
 			System.out.println(essential.get(i));
@@ -457,7 +467,7 @@ public class input {
 				}
 				System.out.println();
 			}
-			Petrick(table2,table3,essential);		
+			Petrick(table2,table3,essential,base);		
 		}
 	}
 	public static boolean test_table(String[][]table2,String PI,String[][] table3)
@@ -555,16 +565,132 @@ public class input {
 			{
 				few_preper_essential.add(help_array[i]);
 			}
-			System.out.println(help_array[i]);
+			//System.out.println(help_array[i]);
 		}
-		for(int i=0;i<few_preper_essential.size();i++)
+		//this print the combination arrange...
+		/*for(int i=0;i<few_preper_essential.size();i++)
 		{
 			System.out.println(few_preper_essential.get(i));
-		}
+		}*/
 		
 		return few_preper_essential;
 	}
-	public static void Petrick(String [][]table,String [][]table2,LinkedList essential)
+	public static void alphabet(LinkedList<String> essential,LinkedList<String> before_final_essential,int base)
+	{
+		LinkedList<String> final_result=new LinkedList();
+		
+		for(int j=0;j<essential.size();j++)
+		{
+			LinkedList<Integer> help2=new LinkedList();
+			char[] help=essential.get(j).toCharArray();
+			int x=65;
+			for(int i=0;i<base;i++)
+			{
+				if(help[i]=='1')
+				{
+					help[i]=(char)x;
+					x++;
+				}
+				else if(help[i]=='_')
+				{
+					help[i]=' ';
+					x++;
+				}
+				else
+				{
+					help[i]=(char)x;
+					help2.add(i);
+					x++;
+				}
+			}
+			String y=new String();
+			for(int d=0;d<help.length;d++)
+			{
+				y=y+help[d];
+			}
+			//String a=new String ();
+			int w=0;
+			for(int o=0;o<help2.size();o++)
+			{
+				int n=w+help2.get(o);
+				char r=y.charAt(n);
+				String s=String.valueOf(r);  
+				y=y.replace(s, s+"`");
+				w++;
+
+			}
+			y=y.replace(" ", "");
+			help2.clear();
+			final_result.add(y);
+		}
+		System.out.println("finally");
+		for(int i=0;i< before_final_essential.size();i++)
+		{
+			
+			LinkedList<Integer> help2=new LinkedList();
+			LinkedList<String> help_final=new LinkedList();
+			String[] a=before_final_essential.get(i).split("&");
+			for(int e=0;e<a.length;e++)
+			{
+				int x=65;
+				char[] help=a[e].toCharArray();
+				
+				for(int j=0;j<help.length;j++)
+				{
+					
+					if(help[j]=='1')
+					{
+						help[j]=(char)x;
+						x++;
+					}
+					else if(help[j]=='_')
+					{
+						help[j]=' ';
+						x++;
+					}
+					else if(help[j]=='0')
+					{
+						help[j]=(char)x;
+						help2.add(j);
+						x++;
+					}
+					
+				}
+				String y=new String();
+				for(int d=0;d<help.length;d++)
+				{
+					y=y+help[d];
+				}
+				int w=0;
+				for(int o=0;o<help2.size();o++)
+				{
+					int n=w+help2.get(o);
+					char r=y.charAt(n);
+					String s=String.valueOf(r);  
+					y=y.replace(s, s+"`");
+					w++;
+				}
+				help2.clear();
+				y=y.replace(" ", "");
+				help_final.add(y);
+			}
+			System.out.print(final_result.get(0));
+			for(int p=1;p<final_result.size();p++)
+			{
+				System.out.print("+");
+				System.out.print(final_result.get(p));
+			}
+			for(int u=0;u<help_final.size();u++)
+			{
+				System.out.print("+");
+				System.out.print(help_final.get(u));
+			}
+			System.out.println();
+		}
+		
+	
+	}
+	public static void Petrick(String [][]table,String [][]table2,LinkedList essential,int base)
 	{
 		LinkedList<String> rest_of_PI=new LinkedList();
 		for(int i=1;i<table.length;i++)
@@ -591,18 +717,20 @@ public class input {
 		}
 		LinkedList<String>preper_the_essential=new LinkedList();
 		int y=0;
-		for(int i=0;i<combin.size();i++)
+		//this is combination without arrange.. 
+		/*for(int i=0;i<combin.size();i++)
 		{
 			System.out.println(combin.get(i));	
-		}
+		}*/
 		System.out.println("stooop...Allah akbar");
 		for(int i=0;i<combin.size();i++)
 		{
 			if(test_table(table,combin.get(i),table2))
 			{
 				preper_the_essential.add(combin.get(i));
-				System.out.println(preper_the_essential.get(y));
-				y++;
+				//this print the probability of discover the  all * ..
+				//System.out.println(preper_the_essential.get(y));
+				//y++;
 			}
 		}
 		System.out.println("stooop...Allah akbar kabira");
@@ -615,6 +743,7 @@ public class input {
 		{
 			System.out.println(before_final_essential.get(i));
 		}
+		alphabet(essential,before_final_essential,base);
 		
 	}
 	
@@ -626,20 +755,26 @@ public class input {
      a=scan.nextLine();
      System.out.println("Are You Need Entre Dont care..");
      String e=scan.nextLine();
+     String b2=new String();
+     String b3=new String();
+    
      if(e.equalsIgnoreCase("yes"))
      {
     	 b=scan.nextLine(); 
+    	 b2=b.replace("{", "");
+         b3=b2.replace("}", "");
+         String[]b1=b3.split(",");
+         int [] Dont_care_decimal=new int [b1.length];
+         for(int i=0;i<b1.length;i++)
+         {
+        	 Dont_care_decimal[i]= Integer.parseInt(b1[i]);
+         }
      }
-     String b2=new String();
-     String b3=new String();
-     b2=b.replace("{", "");
-     b3=b2.replace("}", "");
-     String[]b1=b3.split(",");
-     int [] Dont_care_decimal=new int [b1.length];
-     for(int i=0;i<b1.length;i++)
-     {
-    	 Dont_care_decimal[i]= Integer.parseInt(b1[i]);
-     }
+     else 
+    	 {
+    	 b3="";
+    	 }
+     
     // System.out.println(a);
      String a2=new String();
      String a3=new String();
@@ -654,7 +789,16 @@ public class input {
     // System.out.println(a.length());
     // System.out.println(a2.length());
     // System.out.println(a3.length());
-     String a4=a3+","+b3;
+     String a4=new String();
+     if(b3.equals(""))
+     {
+    	  a4=a3;
+     }
+     else
+     {
+    	a4=a3+","+b3; 
+     }
+    // String a4=a3+","+b3;
      String[]a1=a4.split(",");
      
      int[] array=new int [a1.length];
@@ -724,7 +868,7 @@ public class input {
      }
      LinkedList Prime_Implicant=new LinkedList();
      Prime_Implicant=tubular( binary,binary_base);
-     prime_table(Prime_Implicant,decimal_without_dont_care);
+     prime_table(Prime_Implicant,decimal_without_dont_care,binary_base);
      
      //combination("11__11");
 	}
